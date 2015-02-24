@@ -1,60 +1,95 @@
 import java.util.ArrayList;
-import java.io.BufferedWriter;
-import java.io.OutputStreamWriter;
-import java.io.FileOutputStream;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
+// External libraries contained in json-simple-1.1.1.jar
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public class FileHelper
 {
 	/**
 	 * This function takes an arraylist of arrays as input and writes its data out
 	 * to a file. This function assumes that there are 3 data points per line.
-	 * @param data The ArrayList of data points
+	 * @param distance The Arraylist of datapoints for distance
+	 * @param velocity Arraylist of datapoints for velocity
+	 * @param acceleration The Arraylist of datapoints for acceleration
 	 * @param filename The desired filename of the target file. Note, this is 
 	 * expressed as the full pathname.
 	 * @param del The delimeter used to seperate datum in a line.
 	 * @author Delvison Castillo
 	 */
-	public static boolean write(ArrayList<double[]> data, String filename, 
-	String del)
+	public static boolean write(ArrayList<double[]> distance,
+	ArrayList<double[]> velocity, ArrayList<double[]> acceleration, 
+	String filename) throws IOException
 	{
+		// create json object that represents whole file
+		JSONObject all = new JSONObject();
+
+		// create json arrat for set1
+		JSONArray ps1 = pointsToJSON(distance);
+		JSONArray ps2 = pointsToJSON(acceleration);
+		JSONArray ps3 = pointsToJSON(velocity);
+
+		all.put("Distance",ps1);
+		all.put("Acceleration",ps2);
+		all.put("Velocity",ps3);
+		FileWriter file = new FileWriter(filename);
+		
 		try
 		{
-			// create buffered writer
-			BufferedWriter bw = new BufferedWriter(
-			new OutputStreamWriter(
-			new FileOutputStream( 
-			new File(filename) ))) ;
-
-			// iterate through data and write
-			for (double[] vector : data)
-			{
-				bw.write(vector[0]+del+vector[1]+del+vector[2]+"\n");
-			}
-			// close buffered writer
-			bw.close();
-		} catch (Exception e){
-			//TODO: Specify exact exceptions
-			System.out.println("Error");
+			file.write(all.toJSONString());
+			System.out.println("Successfully Copied JSON Object to File...");
+			System.out.println("\nJSON Object: " + all);
+			return true;
+		} catch (IOException e){
+			e.printStackTrace();
+			return false;
+		} finally {
+			file.flush();
+			file.close();
 		}
-		return false;	
+	}
+
+	/**
+	 * This functions takes an arraylist composed of arrays that each represent a
+	 * point in a line plot. The points are extracted and added to a JSONArray
+	 * object. The JSONArray object is then returned.
+	 * @param set The arraylist composed of arrays that represent a line plot
+	 * @author Delvison Castillo
+	 */
+	public static JSONArray pointsToJSON(ArrayList<double[]> set)
+	{
+		// create json array for set
+		JSONArray ps = new JSONArray();
+
+		// iterate through data and write
+		for (double[] vector : set)
+		{
+			JSONArray point = new JSONArray();
+			point.add("x:"+vector[0]);
+			point.add("y:"+vector[1]);
+			ps.add(point);
+		}
+		return ps;
 	}
 
 /*
-	public static void main(String[] args)
+	public static void main(String[] args) throws IOException
 	{
 		// test write function
 		ArrayList<double[]> testdata = new ArrayList<double[]>();
-		double[] a = {14.456, 0.002, 17.003};
-		double[] b = {1.456, 10.002, 7.003};
-		double[] c = {4.456, 1.002, 19.003};
+		double[] a = {14.456, 0.002};
+		double[] b = {1.456, 10.002};
+		double[] c = {4.456, 1.002};
 
 		testdata.add(a);
 		testdata.add(b);
 		testdata.add(c);
 
-		write(testdata, "/home/delvison/Desktop/testdata.txt");
+		write(testdata,testdata,testdata, "/home/delvison/Desktop/testdata.txt");
 	}
 */
+
 }
