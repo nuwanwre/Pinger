@@ -4,11 +4,69 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 // External libraries contained in json-simple-1.1.1.jar
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+//import org.json.simple.JSONArray;
+//import org.json.simple.JSONObject;
 
 public class FileHelper
 {
+
+	/**
+	 * This function takes an arraylist of arrays as input and writes its data out
+	 * to a file.
+	 * @param distance The Arraylist of datapoints for distance
+	 * @param velocity Arraylist of datapoints for velocity
+	 * @param acceleration The Arraylist of datapoints for acceleration
+	 * @param filename The desired filename of the target file. Note, this is 
+	 * expressed as the full pathname.
+	 * @author Delvison Castillo
+	 */
+	public static boolean writeCSV(ArrayList<double[]> distance,
+	ArrayList<double[]> velocity, ArrayList<double[]> acceleration, 
+	String filename) throws IOException
+	{
+		String csv_data = "";
+		FileWriter file = new FileWriter(filename);
+
+		csv_data += pointsToString(distance, "distance");
+		csv_data += pointsToString(velocity, "velocity");
+		csv_data += pointsToString(acceleration, "acceleration");
+		
+		try
+		{
+			file.write(csv_data);
+			System.out.println("\n"+csv_data);
+			return true;
+		} catch (IOException e){
+			e.printStackTrace();
+			return false;
+		} finally {
+			file.flush();
+			file.close();
+		}
+	}
+
+	/**
+	 * This functions takes an arraylist composed of arrays that each represent a
+	 * point in a line plot. The points are extracted and added to a String
+	 * meant for a csv file. The string is then returned.
+	 * @param set The arraylist composed of arrays that represent a line plot
+	 * @param hdr String to tag the data set. Header.
+	 * @author Delvison Castillo
+	 */
+	public static String pointsToString(ArrayList<double[]> set, String hdr)
+	{
+		// create json array for set
+		String ret ="\n"+hdr+":\n";
+
+		// iterate through data and write
+		for (double[] vector : set)
+		{
+			ret += vector[0]+" , "+vector[1]+"\n";
+		}
+		ret += "\n";
+		return ret;
+	}
+
 	/**
 	 * This function takes an arraylist of arrays as input and writes its data out
 	 * to a file. This function assumes that there are 3 data points per line.
@@ -20,6 +78,7 @@ public class FileHelper
 	 * @param del The delimeter used to seperate datum in a line.
 	 * @author Delvison Castillo
 	 */
+/*
 	public static boolean write(ArrayList<double[]> distance,
 	ArrayList<double[]> velocity, ArrayList<double[]> acceleration, 
 	String filename) throws IOException
@@ -51,6 +110,7 @@ public class FileHelper
 			file.close();
 		}
 	}
+*/
 
 	/**
 	 * This functions takes an arraylist composed of arrays that each represent a
@@ -59,6 +119,7 @@ public class FileHelper
 	 * @param set The arraylist composed of arrays that represent a line plot
 	 * @author Delvison Castillo
 	 */
+/*
 	public static JSONArray pointsToJSON(ArrayList<double[]> set)
 	{
 		// create json array for set
@@ -74,6 +135,8 @@ public class FileHelper
 		}
 		return ps;
 	}
+*/
+
 
 /*
 	public static void main(String[] args) throws IOException
@@ -88,7 +151,7 @@ public class FileHelper
 		testdata.add(b);
 		testdata.add(c);
 
-		write(testdata,testdata,testdata, "/home/delvison/Desktop/testdata.txt");
+		writeCSV(testdata,testdata,testdata, "/home/delvison/Desktop/testdata.txt");
 	}
 */
 
